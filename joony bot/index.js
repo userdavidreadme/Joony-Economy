@@ -31,6 +31,11 @@ async function GetBlacklist(id) {
 
   return data[0][0] ? data[0][0]["Answer"] : undefined
 } 
+async function GetUserID(id) {
+  let data = await(await connection).query(`SELECT * FROM Blacklist WHERE UserID = "${id}"`)
+
+  return data[0][0] ? data[0][0]["UserID"] : undefined
+} 
 
 client.on("guildCreate", async (guild) =>{
   let embed = new Discord.MessageEmbed()
@@ -39,7 +44,7 @@ client.on("guildCreate", async (guild) =>{
   .addField('🛶 MISC','`HELP`')
   .addField('💭 OTHER/FUN','`HOWLOVE` | `8B` | `PING` | `POLL` | `KISS` | `HUG` | `TENOR`')
   .addField('🎟 ADMINISTRATOR','`TIMEOUT` | `BAN` | `UNBAN/PARDON` | `EVAL` | `RELOAD` ')
-  .addField('👛 Economy','`PLANT` | `INVENTORY/I` | `BAL` | `HARVEST` | `BETALL` | `BET` | `TRAVEL`| `EASYTRAVEL` | `LAB` | `FF` | `BIG` | `GIVEMONEY` | `GIVEPLANT` | `DOCS`')
+  .addField('👛 Economy','`PLANT` | `INVENTORY/I` | `BAL` | `HARVEST` | `BETALL` | `BET` | `TRAVEL` | `LAB` | `FF` | `BIG` | `GIVEMONEY` | `GIVEPLANT` | `DOCS`')
   .setTitle('Prefix - `.`')
   .setColor('BLURPLE')
   .setTimestamp()
@@ -108,7 +113,13 @@ client.on("messageCreate", async (message) => {
     );
   if (!command) return;
   if (command) {
-    if (Blacklisted === 'Blacklisted') return message.reply('**ERR_BLACKLIST_FOUND**: You have been permanately blacklisted by a Bot Moderator.\nAppeal Server link: https://discord.gg/FUN6xD2PZh')
+    if (Blacklisted === 'Blacklisted') {
+      let embed = new Discord.MessageEmbed()
+      .setAuthor({name: `${message.author.username}, you are currenty blacklisted!`})
+      .setDescription('❌ You have been permanately blacklisted by a Bot Moderator.\nIf you want to appeal: Join the [Support Server](https://discord.gg/FUN6xD2PZh)')
+      .setColor('RED')
+      return message.reply({embeds: [embed]})
+    }
   }
   if (command.permissions) {
     const authorPerms = message.channel.permissionsFor(message.author);

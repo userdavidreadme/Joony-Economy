@@ -21,22 +21,27 @@ module.exports = {
    */
     async execute(message, args) {
         let verification = Math.floor((Math.random() * 30)+ 1)
-        if (verification > 26) {
-            let number1 = Math.floor(Math.random() * 20)
-            let number2 = Math.floor(Math.random() * 20)
-            let answer = number1 + number2 
-            message.channel.send(`[ANTI-MACRO-CHECK] This is a random check to prevent macroing.\n**What is \`${number1}\` + \`${number2}\` =**\nType your answer in this format: EXAMPLE: \`.verify 13\``).then(msg => {
-                const msg_filter = (m) => m.author.id === message.author.id;
-                message.channel.awaitMessages({ filter: msg_filter, max: 1}).then((collected) => {
-                    let noice = collected.first()
-                    if (noice.content.includes(answer)) {
-                        return msg.edit('✅ Verification approved. Have fun playing!')
-                    } else {
-                        AddBlacklist(message.author.id, 'Blacklisted')
-                        return message.channel.send('❌ You have failed the verification test. **You have been blacklisted permanately.**\nIf you think the blacklist was unfair or mistaken, and would love to provide context, you can appeal.\nAppeal Server link: https://discord.gg/FUN6xD2PZh')
-                    }
+        let GetBypass = await GetUserID(message.author.id)
+        if (verification > 29) {
+            if (GetBypass === 'Bypass') {
+                return message.reply('You bypassed the captcha, as you were whitelisted ✅')
+            } else {
+                let number1 = Math.floor(Math.random() * 20)
+                let number2 = Math.floor(Math.random() * 20)
+                let answer = number1 + number2 
+                message.channel.send(`[ANTI-MACRO-CHECK] This is a random check to prevent macroing.\n**What is \`${number1}\` + \`${number2}\` =**\nType your answer in this format: EXAMPLE: \`.verify 13\``).then(msg => {
+                    const msg_filter = (m) => m.author.id === message.author.id;
+                    message.channel.awaitMessages({ filter: msg_filter, max: 1}).then((collected) => {
+                        let noice = collected.first()
+                        if (noice.content.includes(answer)) {
+                            return msg.edit('✅ Verification approved. Have fun playing!')
+                        } else {
+                            AddBlacklist(message.author.id, 'Blacklisted')
+                            return message.channel.send('❌ You have failed the verification test. **You have been blacklisted permanately.**\nIf you think the blacklist was unfair or mistaken, and would love to provide context, you can appeal.\nAppeal Server link: https://discord.gg/FUN6xD2PZh')
+                        }
+                    })
                 })
-            })
+            }
         } else {
             let cooldownsecond = 21600000
             let Cooldown = await GetCooldown(message.author.id)
@@ -77,6 +82,11 @@ module.exports = {
         }
     }
 }
+async function GetUserID(id) {
+    let data = await(await connection).query(`SELECT * FROM Blacklist WHERE UserID = "${id}"`)
+  
+    return data[0][0] ? data[0][0]["Bypass"] : undefined
+  }
 
 function ShortCoins(Coins) {
     if (isNaN(Coins)) throw new Error('Coins cannot be a character')
