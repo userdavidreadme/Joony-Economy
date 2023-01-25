@@ -1,5 +1,5 @@
 const fs = require("fs")
-
+console.log("loaded")
 module.exports = (client, Discord) => {
 	client.commands = new Discord.Collection();
 	const commandFolders = fs.readdirSync('./commands');
