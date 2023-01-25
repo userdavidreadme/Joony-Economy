@@ -15,7 +15,7 @@ module.exports = {
 			await command.execute(message, args);
 		} catch (error) {
 			console.error(error);
-			message.reply('There was an error trying to execute this command, please try again ❌');
+			message.reply('We encountered an error.');
 		}
 	}
 };
